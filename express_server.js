@@ -43,7 +43,8 @@ app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const templateVars = { id: shortURL, longURL: urlDatabase[shortURL] }; //this may be incorrect
+  res.render("urls_show", templateVars);
 });
 
 
