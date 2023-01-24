@@ -63,6 +63,16 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect('/urls');
 });
 
+//-----------login opperations ------------//
+
+app.post("/login", (req, res) => {
+  console.log(req.body.username);
+  const username = req.body.username;
+
+  res.cookie('name', username);
+  res.redirect('/urls');
+});
+
 
 //---- will log once server connects ----//
 app.listen(PORT, () => {
