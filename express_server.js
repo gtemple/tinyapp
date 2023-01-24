@@ -46,10 +46,18 @@ app.post("/urls", (req, res) => {
   res.redirect(`urls/${shortURL}`);
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  console.log(req.params);
+  delete urlDatabase[req.params.id];
+  res.redirect('/urls');
+});
+
+
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
 });
+
 
 //---- will log once server connects ----//
 app.listen(PORT, () => {
