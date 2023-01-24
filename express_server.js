@@ -77,12 +77,19 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect('/urls');
 });
 
-//-----------login opperations ------------//
+//-----------login/logout opperations ------------//
 
 app.post("/login", (req, res) => {
   const username = req.body.username;
 
   res.cookie('name', username);
+  res.redirect('/urls');
+});
+
+app.post("/logout", (req, res) => {
+  const username = req.body.username;
+  
+  res.clearCookie('name', username)
   res.redirect('/urls');
 });
 
