@@ -21,7 +21,7 @@
     <div class=".form-inline" id="navbarNavAltMarkup">
       <% if (username.name) {%>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <a class="nav-item nav-link"><%= username.name %></a>
+        <a class="nav-item nav-link">Logged in as: <%= username.name %></a>
           <a class="nav-item nav-link">
             <form method="POST" action="/logout">
               <button type="submit" class="btn btn-light">Logout</button>
