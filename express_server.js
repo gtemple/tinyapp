@@ -32,7 +32,7 @@ const findUserByEmail = (userDatabase, email) => {
       return userDatabase[user];
     }
   }
-  return false;
+  return null;
 }
 
 const findUserByID = (userDatabase, id) => {
@@ -138,7 +138,7 @@ app.post("/logout", (req, res) => {
 //-------- registration routes --------//
 
 app.get("/register", (req, res) => {
-  const templateVars = {
+  let templateVars = {
     user: findUserByEmail(users, req.body.email),
   };
   res.render('register', templateVars)
@@ -148,6 +148,19 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+ 
+  if (email === '') {
+    console.log("Email form field was blank. No new user object created")
+    return res.redirect(400, "register")
+  };
+  if (password === '') {
+    console.log("Password form field was blank. No new user object created")
+    return res.redirect(400, "register")
+  };
+  if (findUserByEmail(users, email)) {
+    console.log("This email is already taken. No new user object created")
+    return res.redirect(400, "register")
+  }
 
   users[id] = { id, email, password };
   res.cookie('name', id);
