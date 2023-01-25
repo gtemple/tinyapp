@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -28,6 +29,8 @@ const urlDatabase = {
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
+
+//-------- /url routes --------//
 
 app.get("/urls", (req, res) => {
   const templateVars = {
@@ -89,8 +92,18 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   const username = req.body.username;
   
-  res.clearCookie('name', username);
+  res.clearCookie('name', username)
   res.redirect('/urls');
+});
+
+//-------- registration routes --------//
+
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies,
+  };
+
+  res.render('register', templateVars)
 });
 
 
