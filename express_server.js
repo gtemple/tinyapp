@@ -12,19 +12,40 @@ app.use(cookieParser());
 const generateRandomString = () => {
   let string = '';
   const cipher = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
   let i = 0;
   while (i < 6) {
     string += cipher.charAt(Math.floor(Math.random() * cipher.length));
     i++;
   }
+
+  if (urlDatabase.hasOwnProperty(string)) { //checks if the id already exists. If so, runs the function again
+    generateRandomString();
+  }
+
   return string;
 };
 
+//--------- "databases" --------//
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -102,10 +123,21 @@ app.get("/register", (req, res) => {
   const templateVars = {
     username: req.cookies,
   };
-
   res.render('register', templateVars)
 });
 
+app.post("/register", (req, res) => {
+  const id = generateRandomString();
+  const email = req.body.email
+  const password = req.body.password;
+
+  users[id] = { id, email, password };
+  res.cookie('name', id);
+  console.log(users[id]);
+  console.log(users);
+  res.redirect("urls");
+
+});
 
 //---- will log once server connects ----//
 app.listen(PORT, () => {
