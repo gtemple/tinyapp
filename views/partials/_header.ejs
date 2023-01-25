@@ -29,19 +29,23 @@
           </a>
         </div>
       <% } else { %>
-      <form class="form-inleine" action="/login" method="POST">
-        <div class="form-group mb-2">
-          <label for="email"></label>
-          <input
-            class="form-control"
-            type="text"
-            name="email"
-            placeholder="email"
-            style="width: 250px; margin: 0.5em"
-          />
-          <button type="submit" class="btn btn-light">Login</button>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link" href="/register">Register</a>
+            <a class="nav-item nav-link" href="/login">Login</a>
+          </div>
         </div>
-      </form>
       <% } %>
     </else>
     </div>
