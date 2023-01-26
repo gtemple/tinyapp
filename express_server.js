@@ -148,13 +148,12 @@ app.post("/login", (req, res) => {
   let user = findUserByEmail(users, userEmail);
   console.log('password', userPassword)
   if (!user) {
-    res.redirect('/');
+    console.log('Error 403. This user does not exist')
+    return res.redirect(403, '/login');
   }
-  if (userPassword === '') {
-    res.redirect('/');
-  }
-  if (userPassword !== user.password) {
-    res.redirect('/');
+  if (userPassword !== user.password || userPassword === '') {
+    console.log('Error 403. The password does not match.')
+    return res.redirect(403, '/login');
   }
   res.cookie('user_id', user.id);
   res.redirect('/urls');
@@ -162,7 +161,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id')
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 //-------- /registration routes --------//
