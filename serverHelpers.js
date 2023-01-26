@@ -1,3 +1,8 @@
+const {
+  urlDatabase,
+  users
+} = require("./databases");
+
 const generateRandomString = () => {
   let string = '';
   const cipher = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -27,6 +32,7 @@ const findUserByEmail = (userDatabase, email) => {
 const findUserByID = (userDatabase, id) => {
   for (let user in userDatabase) {
     if (id === userDatabase[user].id) {
+      console.log(userDatabase[user])
       return userDatabase[user];
     }
   }
@@ -42,6 +48,7 @@ const urlsForUser = (urlDatabase, user) => {
       }
     }
   }
+  console.log(userUrls)
   return userUrls;
 };
 
@@ -49,4 +56,11 @@ const checkIfURLIsVald = (url) => {
   return urlDatabase.hasOwnProperty(url) ? urlDatabase[url].longURL : false;
 };
 
-module.exports = { generateRandomString, findUserByEmail, findUserByID, urlsForUser, checkIfURLIsVald }
+const checkIfUserHasPostPrivledges = (id, foundUser) => {
+  if(!foundUser || foundUser.id !== urlDatabase[id].userID) {
+    return false;
+  }
+  return true;
+};
+
+module.exports = { generateRandomString, findUserByEmail, findUserByID, urlsForUser, checkIfURLIsVald, checkIfUserHasPostPrivledges };

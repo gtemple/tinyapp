@@ -13,7 +13,8 @@ const {
   findUserByEmail,
   findUserByID,
   urlsForUser,
-  checkIfURLIsVald
+  checkIfURLIsVald,
+  checkIfUserHasPostPrivledges
 } = require("./serverHelpers");
 
 
@@ -29,18 +30,19 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(urlDatabase);
   const foundUser = findUserByID(users, req.cookies['user_id']);
+
   let urls; 
   if (foundUser) {
     urls = urlsForUser(urlDatabase, foundUser.id);
     console.log('urls', urls);
   }
+
   const templateVars = {
     urls: urls,
     user: foundUser
   };
-  console.log(templateVars)
+
   res.render("urls_index", templateVars);
 });
 
@@ -57,10 +59,23 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  const { id } = req.params;
   const foundUser = findUserByID(users, req.cookies['user_id']);
+  const canView = checkIfUserHasPostPrivledges(id, foundUser);
+  let url;
+
+  if (!canView) {
+    return res.redirect(403, '/urls')
+  }
+
+  if (foundUser) {
+    let urls = urlsForUser(urlDatabase, foundUser.id);
+    url = urls[id].longURL;
+  }
+  
   const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
+    id,
+    longURL: url,
     user: foundUser,
   };
   res.render("urls_show", templateVars);
@@ -91,13 +106,28 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id/update", (req, res) => {
-  const newLongURL = req.body.newLongURL;
-  urlDatabase[req.params.id].longURL = newLongURL;
+  const { newLongURL } = req.body;
+  const { id } = req.params;
+  const foundUser = findUserByID(users, req.cookies['user_id'])
+  const canUpdate = checkIfUserHasPostPrivledges(id, foundUser);
+  if (!canUpdate) {
+    return res.redirect(403, '/urls')
+  }
+
+  urlDatabase[id].longURL = newLongURL;
   res.redirect('/urls');
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
+  const { id } = req.params;
+
+  const foundUser = findUserByID(users, req.cookies['user_id']);
+  const canDelete = checkIfUserHasPostPrivledges(id, foundUser);
+  if (!canDelete) {
+    return res.redirect(403, '/urls')
+  }
+
+  delete urlDatabase[id];
   res.redirect('/urls');
 });
 
@@ -151,8 +181,7 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   const id = generateRandomString();
-  const email = req.body.email;
-  const password = req.body.password;
+  const { email, password } = req.body;
  
   if (email === '') {
     console.log("Email form field was blank. No new user object created")
@@ -175,5 +204,5 @@ app.post("/register", (req, res) => {
 
 //---- will log once server connects ----//
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
