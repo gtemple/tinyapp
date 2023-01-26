@@ -29,22 +29,26 @@
             <th score="col">Delete</th>
           </tr>
         </thead>
-        <tbody>
-          <% for (let id in urls) { %>
-            <tr>
-              <td><%= id %></td>
-              <td><a href="<%= urls[id].longURL %>"><%= urls[id].longURL %></a></td></td>
-              <td>
-                <form method="GET" action="/urls/<%= id %>">
-                <button type="submit" class="btn btn-secondary">Edit</button>
-                </form>
-              </form></td>
-              <td>
-                <form method="POST" action="/urls/<%= id %>/delete">
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
-                </form>
-              </form></td>
-            </tr>
+        <% if (!user) { %>
+          <h4>Welcome to TinyApp! Please login or register for a new account to begin.</h4>
+        <% } else { %>
+          <tbody>
+            <% for (let id in urls) { %>
+              <tr>
+                <td><%= id %></td>
+                <td><a href="<%= urls[id].longURL %>"><%= urls[id].longURL %></a></td></td>
+                <td>
+                  <form method="GET" action="/urls/<%= id %>">
+                  <button type="submit" class="btn btn-secondary">Edit</button>
+                  </form>
+                </form></td>
+                <td>
+                  <form method="POST" action="/urls/<%= id %>/delete">
+                  <button type="submit" class="btn btn-outline-danger">Delete</button>
+                  </form>
+                </form></td>
+              </tr>
+            <% } %>
           <% } %>
         </tbody>
       </table>

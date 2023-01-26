@@ -23,14 +23,14 @@ const urlDatabase = {
 
 const users = {
   userRandomID: {
-    id: "userRandomID",
+    id: "aJ48lW",
     email: "user@example.com",
     password: "test",
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    password: "test2",
   },
 };
 
@@ -61,7 +61,7 @@ const findUserByEmail = (userDatabase, email) => {
     }
   }
   return null;
-}
+};
 
 const findUserByID = (userDatabase, id) => {
   for (let user in userDatabase) {
@@ -70,24 +70,41 @@ const findUserByID = (userDatabase, id) => {
     }
   }
   return false;
-}
+};
+
+const urlsForUser = (urlDatabase, user) => {
+  userUrls = {};
+  for (let urlId in urlDatabase) {
+    if (urlDatabase[urlId].userID === user) {
+      userUrls[urlId] = {
+        longURL: urlDatabase[urlId].longURL
+      }
+    }
+  }
+  return userUrls;
+};
 
 const checkIfURLIsVald = (url) => {
   return urlDatabase.hasOwnProperty(url) ? urlDatabase[url].longURL : false;
-}
+};
 
-
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
 
 //-------- /url routes --------//
+
+app.get("/", (req, res) => {
+  res.redirect("/login");
+});
 
 app.get("/urls", (req, res) => {
   console.log(urlDatabase);
   const foundUser = findUserByID(users, req.cookies['user_id']);
+  let urls; 
+  if (foundUser) {
+    urls = urlsForUser(urlDatabase, foundUser.id);
+    console.log('urls', urls);
+  }
   const templateVars = {
-    urls: urlDatabase,
+    urls: urls,
     user: foundUser
   };
   console.log(templateVars)
@@ -118,11 +135,9 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const longURL = checkIfURLIsVald(req.params.id)
-  const errorMessage = "<p>This URL does not exist! Please submit a valid URL.</>"
-  console.log('hello')
-  console.log(typeof longURL)
+  const errorMessage = "<p>This URL does not exist! Please submit a valid URL.</>";
   if (!longURL) {
-    return res.status(404).send(`${errorMessage}`)
+    return res.status(404).send(`${errorMessage}`);
   }
   res.redirect(longURL);
 });
@@ -170,7 +185,6 @@ app.post("/login", (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
   let user = findUserByEmail(users, userEmail);
-  console.log('password', userPassword)
   if (!user) {
     console.log('Error 403. This user does not exist')
     return res.redirect(403, '/login');
