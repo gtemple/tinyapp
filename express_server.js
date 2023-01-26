@@ -1,93 +1,26 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080; 
+
+const {
+  urlDatabase,
+  users
+} = require("./databases");
+
+const { 
+  generateRandomString,
+  findUserByEmail,
+  findUserByID,
+  urlsForUser,
+  checkIfURLIsVald
+} = require("./serverHelpers");
+
 
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-//--------- "databases" --------//
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW",
-  },
-};
-
-const users = {
-  userRandomID: {
-    id: "aJ48lW",
-    email: "user@example.com",
-    password: "test",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "test2",
-  },
-};
-
-//-------- Helper Functions --------//
-
-
-const generateRandomString = () => {
-  let string = '';
-  const cipher = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-  let i = 0;
-  while (i < 6) {
-    string += cipher.charAt(Math.floor(Math.random() * cipher.length));
-    i++;
-  }
-
-  if (urlDatabase.hasOwnProperty(string)) { //checks if the id already exists. If so, runs the function again
-    generateRandomString();
-  }
-
-  return string;
-};
-
-const findUserByEmail = (userDatabase, email) => {
-  for (let user in userDatabase) {
-    if (email === userDatabase[user].email) {
-      return userDatabase[user];
-    }
-  }
-  return null;
-};
-
-const findUserByID = (userDatabase, id) => {
-  for (let user in userDatabase) {
-    if (id === userDatabase[user].id) {
-      return userDatabase[user];
-    }
-  }
-  return false;
-};
-
-const urlsForUser = (urlDatabase, user) => {
-  userUrls = {};
-  for (let urlId in urlDatabase) {
-    if (urlDatabase[urlId].userID === user) {
-      userUrls[urlId] = {
-        longURL: urlDatabase[urlId].longURL
-      }
-    }
-  }
-  return userUrls;
-};
-
-const checkIfURLIsVald = (url) => {
-  return urlDatabase.hasOwnProperty(url) ? urlDatabase[url].longURL : false;
-};
-
 
 //-------- /url routes --------//
 
