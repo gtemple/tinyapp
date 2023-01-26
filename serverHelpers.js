@@ -1,11 +1,9 @@
-const {
-  urlDatabase,
-  users
-} = require("./databases");
+const { urlDatabase } = require("./databases");
 
 const generateRandomString = () => {
-  let string = '';
-  const cipher = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let string = "";
+  const cipher =
+    "1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   let i = 0;
   while (i < 6) {
@@ -13,7 +11,8 @@ const generateRandomString = () => {
     i++;
   }
 
-  if (urlDatabase.hasOwnProperty(string)) { //checks if the id already exists. If so, runs the function again
+  if (urlDatabase.hasOwnProperty(string)) {
+    //checks if the id already exists. If so, runs the function again
     generateRandomString();
   }
 
@@ -32,7 +31,7 @@ const getUserByEmail = (userDatabase, email) => {
 const getUserByID = (userDatabase, id) => {
   for (let user in userDatabase) {
     if (id === userDatabase[user].id) {
-      console.log(userDatabase[user])
+      console.log(userDatabase[user]);
       return userDatabase[user];
     }
   }
@@ -40,15 +39,15 @@ const getUserByID = (userDatabase, id) => {
 };
 
 const urlsForUser = (urlDatabase, user) => {
-  userUrls = {};
+  let userUrls = {};
   for (let urlId in urlDatabase) {
     if (urlDatabase[urlId].userID === user) {
       userUrls[urlId] = {
-        longURL: urlDatabase[urlId].longURL
-      }
+        longURL: urlDatabase[urlId].longURL,
+      };
     }
   }
-  console.log(userUrls)
+  console.log(userUrls);
   return userUrls;
 };
 
@@ -57,10 +56,17 @@ const checkIfURLIsVald = (url) => {
 };
 
 const checkIfUserHasPostPrivledges = (id, foundUser) => {
-  if(!foundUser || foundUser.id !== urlDatabase[id].userID) {
+  if (!foundUser || foundUser.id !== urlDatabase[id].userID) {
     return false;
   }
   return true;
 };
 
-module.exports = { generateRandomString, getUserByEmail, getUserByID, urlsForUser, checkIfURLIsVald, checkIfUserHasPostPrivledges };
+module.exports = {
+  generateRandomString,
+  getUserByEmail,
+  getUserByID,
+  urlsForUser,
+  checkIfURLIsVald,
+  checkIfUserHasPostPrivledges,
+};
