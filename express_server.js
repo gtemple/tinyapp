@@ -10,8 +10,8 @@ const {
 } = require("./databases");
 const { 
   generateRandomString,
-  findUserByEmail,
-  findUserByID,
+  getUserByEmail,
+  getUserByID,
   urlsForUser,
   checkIfURLIsVald,
   checkIfUserHasPostPrivledges
@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const foundUser = findUserByID(users, req.session.user_id);
+  const foundUser = getUserByID(users, req.session.user_id);
 
   let urls; 
   if (foundUser) {
@@ -52,7 +52,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const foundUser = findUserByID(users, req.session.user_id);
+  const foundUser = getUserByID(users, req.session.user_id);
   const templateVars = {
     user: foundUser
   };
@@ -65,7 +65,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const { id } = req.params;
-  const foundUser = findUserByID(users, req.session.user_id);
+  const foundUser = getUserByID(users, req.session.user_id);
   const canView = checkIfUserHasPostPrivledges(id, foundUser);
   let url;
 
@@ -97,7 +97,7 @@ app.get("/u/:id", (req, res) => {
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
-  const foundUser = findUserByID(users, req.session.user_id)
+  const foundUser = getUserByID(users, req.session.user_id)
   const errorMessage = "<p>Please log in to use the url shortening function!</p> <p>Click <a href='/url>here</a> to return to home page.</p>"
   if (!foundUser) {
     return res.status(404).send(`${errorMessage}`)
@@ -113,7 +113,7 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/update", (req, res) => {
   const { newLongURL } = req.body;
   const { id } = req.params;
-  const foundUser = findUserByID(users, req.session.user_id)
+  const foundUser = getUserByID(users, req.session.user_id)
   const canUpdate = checkIfUserHasPostPrivledges(id, foundUser);
   if (!canUpdate) {
     return res.redirect(403, '/urls')
@@ -126,7 +126,7 @@ app.post("/urls/:id/update", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const { id } = req.params;
 
-  const foundUser = findUserByID(users, req.session.user_id);
+  const foundUser = getUserByID(users, req.session.user_id);
   const canDelete = checkIfUserHasPostPrivledges(id, foundUser);
   if (!canDelete) {
     return res.redirect(403, '/urls')
@@ -139,9 +139,9 @@ app.post("/urls/:id/delete", (req, res) => {
 //-----------/login/out routes ------------//
 
 app.get("/login", (req, res) => {
-  const foundUser = findUserByID(users, req.session.user_id);
+  const foundUser = getUserByID(users, req.session.user_id);
   let templateVars = {
-    user: findUserByEmail(users, req.body.email),
+    user: getUserByEmail(users, req.body.email),
   };
   if (foundUser) {
     return res.redirect('/urls')
@@ -151,7 +151,7 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const user = findUserByEmail(users, email);
+  const user = getUserByEmail(users, email);
   const doesPasswordMatch = bcrypt.compareSync(password, user.password);
   if (!user) {
     console.log('Error 403. This user does not exist')
@@ -174,9 +174,9 @@ app.post("/logout", (req, res) => {
 
 
 app.get("/register", (req, res) => {
-  const foundUser = findUserByID(users, req.session.user_id);
+  const foundUser = getUserByID(users, req.session.user_id);
   let templateVars = {
-    user: findUserByEmail(users, req.body.email),
+    user: getUserByEmail(users, req.body.email),
   };
   if (foundUser) {
     return res.redirect('/urls')
@@ -200,7 +200,7 @@ app.post("/register", (req, res) => {
     return res.redirect(400, "register")
   };
 
-  if (findUserByEmail(users, email)) {
+  if (getUserByEmail(users, email)) {
     console.log("This email is already taken. No new user object created")
     return res.redirect(400, "/register")
   }

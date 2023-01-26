@@ -20,16 +20,16 @@ const generateRandomString = () => {
   return string;
 };
 
-const findUserByEmail = (userDatabase, email) => {
+const getUserByEmail = (userDatabase, email) => {
   for (let user in userDatabase) {
     if (email === userDatabase[user].email) {
       return userDatabase[user];
     }
   }
-  return null;
+  return undefined;
 };
 
-const findUserByID = (userDatabase, id) => {
+const getUserByID = (userDatabase, id) => {
   for (let user in userDatabase) {
     if (id === userDatabase[user].id) {
       console.log(userDatabase[user])
@@ -63,4 +63,4 @@ const checkIfUserHasPostPrivledges = (id, foundUser) => {
   return true;
 };
 
-module.exports = { generateRandomString, findUserByEmail, findUserByID, urlsForUser, checkIfURLIsVald, checkIfUserHasPostPrivledges };
+module.exports = { generateRandomString, getUserByEmail, getUserByID, urlsForUser, checkIfURLIsVald, checkIfUserHasPostPrivledges };
