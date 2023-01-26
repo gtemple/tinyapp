@@ -72,6 +72,10 @@ const findUserByID = (userDatabase, id) => {
   return false;
 }
 
+const checkIfURLIsVald = (url) => {
+  return urlDatabase.hasOwnProperty(url) ? urlDatabase[url].longURL : false;
+}
+
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -86,7 +90,7 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: foundUser
   };
-
+  console.log(templateVars)
   res.render("urls_index", templateVars);
 });
 
@@ -95,6 +99,10 @@ app.get("/urls/new", (req, res) => {
   const templateVars = {
     user: foundUser
   };
+  if (!foundUser) {
+    res.redirect('/urls')
+  }
+
   res.render("urls_new", templateVars);
 });
 
@@ -109,12 +117,24 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id].longURL;
+  const longURL = checkIfURLIsVald(req.params.id)
+  const errorMessage = "<p>This URL does not exist! Please submit a valid URL.</>"
+  console.log('hello')
+  console.log(typeof longURL)
+  if (!longURL) {
+    return res.status(404).send(`${errorMessage}`)
+  }
   res.redirect(longURL);
 });
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
+  const foundUser = findUserByID(users, req.cookies['user_id'])
+  const errorMessage = "<p>Please log in to use the url shortening function!</p> <p>Click <a href='/url>here</a> to return to home page.</p>"
+  if (!foundUser) {
+    return res.status(404).send(`${errorMessage}`)
+  }
+
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     userID: req.cookies['user_id']
@@ -136,9 +156,13 @@ app.post("/urls/:id/delete", (req, res) => {
 //-----------/login/out routes ------------//
 
 app.get("/login", (req, res) => {
+  const foundUser = findUserByID(users, req.cookies['user_id']);
   let templateVars = {
     user: findUserByEmail(users, req.body.email),
   };
+  if (foundUser) {
+    return res.redirect('/urls')
+  }
   res.render('login', templateVars)
 });
 
@@ -168,9 +192,13 @@ app.post("/logout", (req, res) => {
 
 
 app.get("/register", (req, res) => {
+  const foundUser = findUserByID(users, req.cookies['user_id']);
   let templateVars = {
     user: findUserByEmail(users, req.body.email),
   };
+  if (foundUser) {
+    return res.redirect('/urls')
+  }
   res.render('register', templateVars)
 });
 
@@ -185,11 +213,11 @@ app.post("/register", (req, res) => {
   };
   if (password === '') {
     console.log("Password form field was blank. No new user object created")
-    return res.redirect(400, "register")
+    return res.redirect(400, "/register")
   };
   if (findUserByEmail(users, email)) {
     console.log("This email is already taken. No new user object created")
-    return res.redirect(400, "register")
+    return res.redirect(400, "/register")
   }
 
   users[id] = { id, email, password };
