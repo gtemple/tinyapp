@@ -1,4 +1,5 @@
-const { urlDatabase } = require("./databases");
+
+const { urlDatabase, users } = require("./databases");
 
 const generateRandomString = () => {
   let string = "";
@@ -52,7 +53,8 @@ const urlsForUser = (urlDatabase, user) => {
 };
 
 const checkIfURLIsVald = (url) => {
-  return urlDatabase.hasOwnProperty(url) ? urlDatabase[url].longURL : false;
+  const isValid = urlDatabase.hasOwnProperty(url) ? true : false;
+  return isValid
 };
 
 const checkIfUserHasPostPrivledges = (id, foundUser) => {

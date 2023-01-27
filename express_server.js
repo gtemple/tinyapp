@@ -36,7 +36,6 @@ app.get("/urls", (req, res) => {
   let urls;
   if (foundUser) {
     urls = urlsForUser(urlDatabase, foundUser.id);
-    console.log("urls", urls);
   }
 
   const templateVars = {
@@ -83,20 +82,22 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = checkIfURLIsVald(req.params.id);
+  const id = req.params.id;
+  const ifLongUrlExists = checkIfURLIsVald(id);
   const errorMessage =
     "<p>This URL does not exist! Please submit a valid URL.</>";
-  if (!longURL) {
+  if (!ifLongUrlExists) {
     return res.status(404).send(`${errorMessage}`);
   }
-  res.redirect(longURL);
+  const newUrl = urlDatabase[id].longURL;
+  res.redirect(newUrl);
 });
 
 app.post("/urls", (req, res) => {
   let shortURL = generateRandomString();
   const foundUser = getUserByID(users, req.session.user_id);
   const errorMessage =
-    "<p>Please log in to use the url shortening function!</p> <p>Click <a href='/url>here</a> to return to home page.</p>";
+    "<p>Please log in to use the url shortening function!</p> <p>Click <a href='/login'>here</a> to log in.</p>";
   if (!foundUser) {
     return res.status(404).send(`${errorMessage}`);
   }
@@ -150,11 +151,11 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const user = getUserByEmail(users, email);
-  const doesPasswordMatch = bcrypt.compareSync(password, user.password);
-  if (!user) {
+  if (user === undefined) {
     console.log("Error 403. This user does not exist");
     return res.redirect(403, "/login");
   }
+  const doesPasswordMatch = bcrypt.compareSync(password, user.password);
   if (!doesPasswordMatch) {
     console.log("Error 403. The password does not match.");
     return res.redirect(403, "/login");
